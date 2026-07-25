@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+<title>Io's Money Machine</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap');
+
+  :root{
+    --bg: #EBF0EC;
+    --header: #9B80D1;
+    --header-deep: #8768C4;
+    --card: #FFFFFF;
+    --card-alt: #F0E9F9;
+    --ink: #34313D;
+    --muted: #8B87A0;
+    --accent: #8C6CC1;
+    --accent-soft: #B39EDD;
+    --deposit: #7FAE8C;
+    --deposit-deep: #5C8F6C;
+    --withdraw: #E0554B;
+    --withdraw-deep: #B8423A;
+    --amber: #C99A3E;
+    --amber-deep: #A17C2E;
+    --line: #E7E1F2;
+    --shadow: 0 10px 26px rgba(90,70,140,0.12);
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    min-height:100vh;
+    background:var(--bg);
+    font-family:'Inter',sans-serif;
+    color:var(--ink);
+    padding-bottom:60px;
+  }
+
+  .wrap{width:100%; max-width:440px; margin:0 auto; padding:20px 16px 0;}
+
+  .top-bar{
+    width:100%;
+    background:linear-gradient(180deg, var(--header), var(--header-deep));
+    padding:20px 16px;
+    position:relative;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    box-shadow:0 4px 14px rgba(90,70,140,0.18);
+  }
+  .top-bar h1{
+    font-family:'Inter',sans-serif;
+    font-weight:700;
+    font-size:20px;
+    line-height:1.2;
+    color:#fff;
+    margin:0;
+    text-align:center;
+    padding:0 56px;
+  }
+  .top-bar .sub{
+    display:block;
+    font-family:'Inter',sans-serif;
+    font-weight:400;
+    font-size:11.5px;
+    color:rgba(255,255,255,0.78);
+    margin-top:3px;
+    letter-spacing:0.02em;
+  }
+  .history-link{
+    position:absolute;
+    right:16px; top:50%; transform:translateY(-50%);
+    background:rgba(255,255,255,0.16);
+    border:1px solid rgba(255,255,255,0.35);
+    color:#fff;
+    font-family:'Inter',sans-serif;
+    font-size:11.5px;
+    font-weight:600;
+    letter-spacing:0.02em;
+    padding:8px 14px;
+    border-radius:20px;
+    cursor:pointer;
+  }
+  .sites-link{
+    position:absolute;
+    left:16px; top:50%; transform:translateY(-50%);
+    background:rgba(255,255,255,0.16);
+    border:1px solid rgba(255,255,255,0.35);
+    color:#fff;
+    font-family:'Inter',sans-serif;
+    font-size:11.5px;
+    font-weight:600;
+    letter-spacing:0.02em;
+    padding:8px 14px;
+    border-radius:20px;
+    cursor:pointer;
+  }
+  .back-link{
+    position:absolute;
+    left:16px; top:50%; transform:translateY(-50%);
+    background:none;
+    border:none;
+    color:#fff;
+    font-family:'Inter',sans-serif;
+    font-size:15px;
+    font-weight:600;
+    cursor:pointer;
+    padding:4px 6px;
+  }
+
+  .card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:18px;
+    padding:22px;
+    box-shadow:var(--shadow);
+    margin-bottom:16px;
+  }
+
+  .field{margin-bottom:16px;}
+  .field:last-child{margin-bottom:0;}
+  label{
+    display:block;
+    font-size:11.5px;
+    text-transform:uppercase;
+    letter-spacing:0.08em;
+    color:var(--accent);
+    margin-bottom:7px;
+    font-weight:700;
+  }
+
+  select, input[type="date"], input[type="text"], input[type="number"]{
+    width:100%;
+    background:#FAF8FD;
+    border:1.5px solid var(--line);
+    color:var(--ink);
+    font-family:'Inter',sans-serif;
+    font-size:15.5px;
+    padding:13px 14px;
+    border-radius:11px;
+    outline:none;
+    appearance:none;
+    -webkit-appearance:none;
+  }
+  select{
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%238C6CC1'><path d='M5.5 7.5l4.5 5 4.5-5z'/></svg>");
+    background-repeat:no-repeat;
+    background-position:right 12px center;
+    background-size:18px;
+    padding-right:38px;
+  }
+  select:focus, input:focus{
+    border-color:var(--accent-soft);
+    box-shadow:0 0 0 3px rgba(140,108,193,0.16);
+  }
+  input[type="date"]{color-scheme:light;}
+  input::placeholder{color:#B9B4C9;}
+
+  .hint{
+    margin:7px 2px 0;
+    font-size:11.5px;
+    color:var(--muted);
+    line-height:1.4;
+  }
+
+  .site-combo{position:relative;}
+  .site-suggestions{
+    position:absolute;
+    left:0; right:0; top:calc(100% + 6px);
+    background:#fff;
+    border:1.5px solid var(--line);
+    border-radius:11px;
+    box-shadow:0 10px 24px rgba(90,70,140,0.18);
+    max-height:220px;
+    overflow-y:auto;
+    z-index:20;
+  }
+  .site-suggestions .opt{
+    padding:12px 14px;
+    font-size:14.5px;
+    color:var(--ink);
+    cursor:pointer;
+    border-bottom:1px solid var(--line);
+  }
+  .site-suggestions .opt:last-child{border-bottom:none;}
+  .site-suggestions .opt:hover,
+  .site-suggestions .opt.highlight{
+    background:var(--card-alt);
+  }
+  .site-suggestions .opt.add-new{
+    color:var(--accent);
+    font-weight:600;
+  }
+  .site-suggestions .opt.no-match{
+    color:var(--muted);
+    cursor:default;
+  }
+  .site-suggestions .opt.no-match:hover{background:none;}
+
+  .amount-row{position:relative;}
+  .amount-row .prefix{
+    position:absolute;
+    left:14px; top:50%; transform:translateY(-50%);
+    font-family:'IBM Plex Mono',monospace;
+    color:var(--muted);
+    font-size:15px;
+    pointer-events:none;
+  }
+  .amount-row input{
+    padding-left:42px;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:17px;
+    letter-spacing:0.01em;
+  }
+
+  .toggle{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+  }
+  .toggle button{
+    border:1.5px solid var(--line);
+    background:#FAF8FD;
+    color:var(--muted);
+    font-family:'Inter',sans-serif;
+    font-weight:600;
+    font-size:14.5px;
+    padding:14px 10px;
+    border-radius:11px;
+    cursor:pointer;
+    transition:all .15s ease;
+    letter-spacing:0.01em;
+  }
+  .toggle button.active[data-type="deposit"]{
+    background:linear-gradient(180deg, var(--deposit), var(--deposit-deep));
+    border-color:var(--deposit-deep);
+    color:#fff;
+  }
+  .toggle button.active[data-type="withdraw"]{
+    background:linear-gradient(180deg, var(--withdraw), var(--withdraw-deep));
+    border-color:var(--withdraw-deep);
+    color:#fff;
+  }
+
+  .add-site-row{
+    display:flex; gap:8px; margin-top:8px;
+  }
+  .add-site-row input{flex:1;}
+  .add-site-row button{
+    background:var(--accent);
+    color:#fff;
+    border:none;
+    border-radius:11px;
+    padding:0 16px;
+    font-weight:700;
+    font-size:14px;
+    cursor:pointer;
+  }
+  .cancel-link{
+    background:none;border:none;color:var(--muted);
+    font-size:12.5px; text-decoration:underline;
+    cursor:pointer; padding:8px 0 0; display:inline-block;
+  }
+
+  .save-btn{
+    width:100%;
+    padding:16px;
+    border:none;
+    border-radius:12px;
+    background:linear-gradient(180deg, var(--accent-soft), var(--accent));
+    color:#fff;
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    font-size:17px;
+    letter-spacing:0.01em;
+    cursor:pointer;
+    box-shadow:0 8px 20px rgba(140,108,193,0.30);
+    transition:transform .1s ease;
+  }
+  .save-btn:active{transform:scale(0.98);}
+  .save-btn:disabled{opacity:0.4; cursor:not-allowed; box-shadow:none;}
+
+  .toast{
+    text-align:center;
+    font-size:13px;
+    color:var(--deposit-deep);
+    height:18px;
+    margin-top:10px;
+    opacity:0;
+    transition:opacity .2s ease;
+  }
+  .toast.show{opacity:1;}
+
+  .history-head{
+    display:flex; align-items:center; justify-content:space-between;
+    margin-bottom:14px;
+  }
+  .history-head span{
+    font-family:'Fraunces',serif;
+    font-size:17px;
+    color:var(--accent);
+  }
+  .history-actions{display:flex; align-items:center; gap:14px;}
+  .history-actions button{
+    background:none;border:none;color:var(--muted);
+    font-size:12px; cursor:pointer; text-decoration:underline;
+  }
+  .history-actions button#exportCsv{
+    color:var(--accent);
+  }
+  .history-actions button#clearAll{
+    color:var(--withdraw-deep);
+  }
+
+  .summary-box{
+    background:var(--card-alt);
+    border:1px solid var(--line);
+    border-radius:11px;
+    padding:12px 14px;
+  }
+  .summary-box .label{
+    font-size:10.5px; text-transform:uppercase; letter-spacing:0.07em;
+    color:var(--accent); font-weight:700; margin-bottom:4px;
+  }
+  .summary-box .value{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:16px; font-weight:600;
+  }
+  .summary-box .sub{
+    font-size:10.5px;
+    color:var(--muted);
+    margin-top:2px;
+  }
+  .summary-box.deposit .value{color:var(--deposit-deep);}
+  .summary-box.withdraw .value{color:var(--withdraw-deep);}
+
+  .summary-row, .quick-summary{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+    margin-bottom:16px;
+  }
+
+  table.ledger-table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:13px;
+  }
+  table.ledger-table thead th{
+    text-align:left;
+    font-size:10.5px;
+    text-transform:uppercase;
+    letter-spacing:0.06em;
+    color:var(--accent);
+    font-weight:700;
+    padding:0 6px 8px;
+    border-bottom:1.5px solid var(--line);
+  }
+  table.ledger-table thead th:last-child{text-align:right;}
+  table.ledger-table tbody td{
+    padding:10px 6px;
+    border-bottom:1px dashed var(--line);
+    vertical-align:middle;
+  }
+  table.ledger-table tbody tr:last-child td{border-bottom:none;}
+  table.ledger-table .col-date{color:var(--muted); font-size:12px; white-space:nowrap;}
+  table.ledger-table .col-site{font-weight:600; color:var(--ink);}
+  table.ledger-table .col-type{font-size:11.5px; font-weight:600;}
+  table.ledger-table .col-type.deposit{color:var(--deposit-deep);}
+  table.ledger-table .col-type.withdraw{color:var(--withdraw-deep);}
+  table.ledger-table .col-amt{
+    font-family:'IBM Plex Mono',monospace;
+    font-weight:600;
+    text-align:right;
+    white-space:nowrap;
+  }
+  table.ledger-table .col-amt.deposit{color:var(--deposit-deep);}
+  table.ledger-table .col-amt.withdraw{color:var(--withdraw-deep);}
+  table.ledger-table .col-del{text-align:right; width:26px;}
+  table.ledger-table .del{
+    background:none;border:none;color:var(--muted);
+    font-size:15px; cursor:pointer; padding:2px 4px; opacity:0.6;
+  }
+  table.ledger-table .del:hover{opacity:1; color:var(--withdraw-deep);}
+
+  .site-mgmt-add{
+    display:flex; gap:8px; margin-bottom:18px;
+  }
+  .site-mgmt-add input{flex:1;}
+  .site-mgmt-add button{
+    background:var(--accent);
+    color:#fff;
+    border:none;
+    border-radius:11px;
+    padding:0 18px;
+    font-weight:700;
+    font-size:14px;
+    cursor:pointer;
+  }
+  .site-mgmt-list .row{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:13px 4px;
+    border-bottom:1px dashed var(--line);
+  }
+  .site-mgmt-list .row:last-child{border-bottom:none;}
+  .site-mgmt-list .row .name{font-size:14.5px; font-weight:600; color:var(--ink);}
+  .site-mgmt-list .row .row-actions{
+    display:flex; align-items:center; gap:6px;
+  }
+  .site-mgmt-list .row .rename-btn{
+    background:none;border:none;color:var(--amber-deep);
+    cursor:pointer; padding:6px; opacity:0.8;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .site-mgmt-list .row .rename-btn:hover{opacity:1;}
+  .site-mgmt-list .row .rename-btn svg{width:16px; height:16px; display:block;}
+  .site-mgmt-list .row .del-btn{
+    background:none;border:none;color:var(--withdraw-deep);
+    cursor:pointer; padding:6px; opacity:0.8;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .site-mgmt-list .row .del-btn:hover{opacity:1;}
+  .site-mgmt-list .row .del-btn svg{width:16px; height:16px; display:block;}
+
+  .empty{
+    text-align:center; color:var(--muted); font-size:13px;
+    padding:20px 0;
+  }
+
+  .loading{
+    text-align:center; color:var(--muted); font-size:13px; padding:30px 0;
+  }
+</style>
+</head>
+<body>
+
+  <!-- TOP BARS -->
+  <div class="top-bar" id="topBarEntry">
+    <button type="button" class="sites-link" id="openSites">Sites</button>
+    <h1>Io's Money Machine</h1>
+    <button type="button" class="history-link" id="openHistory">History</button>
+  </div>
+  <div class="top-bar" id="topBarHistory" style="display:none;">
+    <button type="button" class="back-link" id="closeHistory">‹ Back</button>
+    <h1>History</h1>
+  </div>
+  <div class="top-bar" id="topBarSites" style="display:none;">
+    <button type="button" class="back-link" id="closeSites">‹ Back</button>
+    <h1>Sites</h1>
+  </div>
+
+  <div class="wrap">
+
+    <!-- ENTRY VIEW -->
+    <div id="entryView">
+
+      <div class="quick-summary" id="quickSummary">
+        <div class="summary-box deposit">
+          <div class="label">Deposits</div>
+          <div class="value" id="qsDepositTotal">Rp 0</div>
+          <div class="sub" id="qsDepositCount">0 times</div>
+        </div>
+        <div class="summary-box withdraw">
+          <div class="label">Withdrawals</div>
+          <div class="value" id="qsWithdrawTotal">Rp 0</div>
+          <div class="sub" id="qsWithdrawCount">0 times</div>
+        </div>
+      </div>
+
+      <div class="card" id="formCard">
+        <div class="loading" id="loadingMsg">Loading…</div>
+        <form id="entryForm" style="display:none;">
+
+          <div class="field">
+            <label>Type</label>
+            <div class="toggle">
+              <button type="button" data-type="deposit" id="btnDeposit">Deposit</button>
+              <button type="button" data-type="withdraw" id="btnWithdraw">Withdraw</button>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Site</label>
+            <div class="site-combo">
+              <input type="text" id="siteInput" placeholder="Type to search or add a site…" autocomplete="off" />
+              <div class="site-suggestions" id="siteSuggestions" style="display:none;"></div>
+            </div>
+          </div>
+
+          <div class="field">
+            <label>Date</label>
+            <input type="date" id="dateInput" />
+            <p class="hint">Forgot to log yesterday? Tap the date to change it.</p>
+          </div>
+
+          <div class="field">
+            <label>Amount</label>
+            <div class="amount-row">
+              <span class="prefix">Rp</span>
+              <input type="number" id="amountInput" placeholder="0" min="0" step="1" inputmode="numeric" />
+            </div>
+          </div>
+
+          <button type="submit" class="save-btn" id="saveBtn" disabled>Save entry</button>
+          <div class="toast" id="toast"></div>
+        </form>
+      </div>
+    </div>
+
+    <!-- HISTORY VIEW -->
+    <div id="historyView" style="display:none;">
+      <div class="card">
+        <div class="summary-row">
+          <div class="summary-box deposit">
+            <div class="label">Total deposits</div>
+            <div class="value" id="totalDeposits">Rp 0</div>
+          </div>
+          <div class="summary-box withdraw">
+            <div class="label">Total withdrawals</div>
+            <div class="value" id="totalWithdrawals">Rp 0</div>
+          </div>
+        </div>
+
+        <div class="history-head">
+          <span>All entries</span>
+          <div class="history-actions">
+            <button type="button" id="exportCsv">export csv</button>
+            <button type="button" id="clearAll">clear all</button>
+          </div>
+        </div>
+
+        <table class="ledger-table" id="ledgerTable" style="display:none;">
+          <thead>
+            <tr><th>Date</th><th>Site</th><th>Type</th><th>Amount</th><th></th></tr>
+          </thead>
+          <tbody id="historyList"></tbody>
+        </table>
+        <div class="empty" id="emptyMsg" style="display:none;">Nothing logged yet.</div>
+      </div>
+    </div>
+
+    <!-- SITES VIEW -->
+    <div id="sitesView" style="display:none;">
+      <div class="card">
+        <div class="site-mgmt-add">
+          <input type="text" id="newSiteMgmtInput" placeholder="New site name" />
+          <button type="button" id="addSiteMgmtBtn">Add</button>
+        </div>
+        <div class="site-mgmt-list" id="siteMgmtList"></div>
+        <div class="empty" id="siteMgmtEmpty" style="display:none;">No sites yet.</div>
+      </div>
+    </div>
+
+  </div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import {
+  getFirestore, collection, doc, addDoc, deleteDoc, setDoc, getDoc,
+  onSnapshot, query, orderBy
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCp_3uSDmGutgFnwD-tyWVZ_5y1KcCzn_o",
+  authDomain: "iomoneymachine.firebaseapp.com",
+  projectId: "iomoneymachine",
+  storageBucket: "iomoneymachine.firebasestorage.app",
+  messagingSenderId: "782976037461",
+  appId: "1:782976037461:web:d48441bbb82b96d7401adc"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const sitesDocRef = doc(db, "meta", "sites");
+const entriesCol = collection(db, "entries");
+
+(function(){
+  const DEFAULT_SITES = [];
+  let sites = [];
+  let entries = [];
+  let currentType = 'deposit';
+
+  const entryView = document.getElementById('entryView');
+  const historyView = document.getElementById('historyView');
+  const sitesView = document.getElementById('sitesView');
+  const topBarEntry = document.getElementById('topBarEntry');
+  const topBarHistory = document.getElementById('topBarHistory');
+  const topBarSites = document.getElementById('topBarSites');
+  const openHistory = document.getElementById('openHistory');
+  const closeHistory = document.getElementById('closeHistory');
+  const openSites = document.getElementById('openSites');
+  const closeSites = document.getElementById('closeSites');
+  const newSiteMgmtInput = document.getElementById('newSiteMgmtInput');
+  const addSiteMgmtBtn = document.getElementById('addSiteMgmtBtn');
+  const siteMgmtList = document.getElementById('siteMgmtList');
+  const siteMgmtEmpty = document.getElementById('siteMgmtEmpty');
+
+  const loadingMsg = document.getElementById('loadingMsg');
+  const entryForm = document.getElementById('entryForm');
+  const btnDeposit = document.getElementById('btnDeposit');
+  const btnWithdraw = document.getElementById('btnWithdraw');
+  const siteInput = document.getElementById('siteInput');
+  const siteSuggestions = document.getElementById('siteSuggestions');
+  const dateInput = document.getElementById('dateInput');
+  const amountInput = document.getElementById('amountInput');
+  const saveBtn = document.getElementById('saveBtn');
+  const toast = document.getElementById('toast');
+
+  const ledgerTable = document.getElementById('ledgerTable');
+  const historyList = document.getElementById('historyList');
+  const emptyMsg = document.getElementById('emptyMsg');
+  const exportCsv = document.getElementById('exportCsv');
+  const clearAll = document.getElementById('clearAll');
+  const totalDeposits = document.getElementById('totalDeposits');
+  const totalWithdrawals = document.getElementById('totalWithdrawals');
+  const qsDepositTotal = document.getElementById('qsDepositTotal');
+  const qsDepositCount = document.getElementById('qsDepositCount');
+  const qsWithdrawTotal = document.getElementById('qsWithdrawTotal');
+  const qsWithdrawCount = document.getElementById('qsWithdrawCount');
+
+  let selectedSite = null; // the confirmed chosen site name, or null until picked
+
+  function todayStr(){
+    const d = new Date();
+    const off = d.getTimezoneOffset();
+    const local = new Date(d.getTime() - off*60000);
+    return local.toISOString().slice(0,10);
+  }
+
+  function fmtAmount(n){
+    return new Intl.NumberFormat('en-US').format(n);
+  }
+
+  function fmtDate(iso){
+    const d = new Date(iso + 'T00:00:00');
+    return d.toLocaleDateString('en-US', { day:'numeric', month:'short', year:'numeric' });
+  }
+
+  function setType(type){
+    currentType = type;
+    btnDeposit.classList.toggle('active', type==='deposit');
+    btnWithdraw.classList.toggle('active', type==='withdraw');
+    validateForm();
+  }
+
+  function validateForm(){
+    const siteOk = !!selectedSite;
+    const amtOk = amountInput.value && Number(amountInput.value) > 0;
+    saveBtn.disabled = !(siteOk && amtOk && dateInput.value);
+  }
+
+  function renderSuggestions(){
+    const query = siteInput.value.trim();
+    const queryLower = query.toLowerCase();
+
+    const matches = sites
+      .filter(s => s.toLowerCase().startsWith(queryLower))
+      .sort((a,b) => a.localeCompare(b));
+
+    siteSuggestions.innerHTML = '';
+
+    if (!query){
+      // No text yet: show full alphabetical list
+      const all = [...sites].sort((a,b) => a.localeCompare(b));
+      if (!all.length){
+        siteSuggestions.innerHTML = '<div class="opt no-match">No sites yet — type a name to add one.</div>';
+      } else {
+        all.forEach(s => addOption(s));
+      }
+    } else {
+      matches.forEach(s => addOption(s));
+      const exact = sites.some(s => s.toLowerCase() === queryLower);
+      if (!exact){
+        const addOpt = document.createElement('div');
+        addOpt.className = 'opt add-new';
+        addOpt.textContent = `+ Add "${query}" as new site`;
+        addOpt.addEventListener('mousedown', (e) => {
+          e.preventDefault();
+          confirmSite(query, true);
+        });
+        siteSuggestions.appendChild(addOpt);
+      }
+    }
+
+    siteSuggestions.style.display = 'block';
+  }
+
+  function addOption(name){
+    const opt = document.createElement('div');
+    opt.className = 'opt';
+    opt.textContent = name;
+    opt.addEventListener('mousedown', (e) => {
+      e.preventDefault();
+      confirmSite(name, false);
+    });
+    siteSuggestions.appendChild(opt);
+  }
+
+  async function confirmSite(name, isNew){
+    if (isNew){
+      sites.push(name);
+      try {
+        await setDoc(sitesDocRef, { list: sites }, { merge: true });
+      } catch(e){ console.error('Failed to save site', e); }
+    }
+    selectedSite = name;
+    siteInput.value = name;
+    siteSuggestions.style.display = 'none';
+    validateForm();
+  }
+
+  siteInput.addEventListener('input', () => {
+    selectedSite = null; // typing invalidates prior selection until re-confirmed
+    validateForm();
+    renderSuggestions();
+  });
+  siteInput.addEventListener('focus', renderSuggestions);
+  siteInput.addEventListener('blur', () => {
+    setTimeout(() => { siteSuggestions.style.display = 'none'; }, 150);
+  });
+
+  amountInput.addEventListener('input', validateForm);
+  dateInput.addEventListener('change', validateForm);
+
+  btnDeposit.addEventListener('click', () => setType('deposit'));
+  btnWithdraw.addEventListener('click', () => setType('withdraw'));
+
+  function showHistoryView(){
+    entryView.style.display = 'none';
+    topBarEntry.style.display = 'none';
+    historyView.style.display = 'block';
+    topBarHistory.style.display = 'flex';
+    renderHistory();
+  }
+  function showEntryView(){
+    historyView.style.display = 'none';
+    topBarHistory.style.display = 'none';
+    sitesView.style.display = 'none';
+    topBarSites.style.display = 'none';
+    entryView.style.display = 'block';
+    topBarEntry.style.display = 'flex';
+  }
+  function showSitesView(){
+    entryView.style.display = 'none';
+    topBarEntry.style.display = 'none';
+    sitesView.style.display = 'block';
+    topBarSites.style.display = 'flex';
+    renderSiteMgmtList();
+  }
+  openHistory.addEventListener('click', showHistoryView);
+  closeHistory.addEventListener('click', showEntryView);
+  openSites.addEventListener('click', showSitesView);
+  closeSites.addEventListener('click', showEntryView);
+
+  const PENCIL_SVG = `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M15.4 4.6L19.4 8.6L8.6 19.4H4.6V15.4L15.4 4.6Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M13.2 6.8L17.2 10.8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>`;
+
+  const TRASH_SVG = `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M4 7H20" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    <path d="M9 7V4.5C9 3.67 9.67 3 10.5 3H13.5C14.33 3 15 3.67 15 4.5V7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M6 7L6.8 19.2C6.86 20.2 7.7 21 8.7 21H15.3C16.3 21 17.14 20.2 17.2 19.2L18 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M10 11V16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+    <path d="M14 11V16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+  </svg>`;
+
+  function renderSiteMgmtList(){
+    const sorted = [...sites].sort((a,b) => a.localeCompare(b));
+    siteMgmtList.innerHTML = '';
+    siteMgmtEmpty.style.display = sorted.length ? 'none' : 'block';
+    sorted.forEach(name => {
+      const row = document.createElement('div');
+      row.className = 'row';
+      row.innerHTML = `
+        <span class="name">${escapeHtml(name)}</span>
+        <span class="row-actions">
+          <button class="rename-btn" data-name="${escapeHtml(name)}" title="Rename">${PENCIL_SVG}</button>
+          <button class="del-btn" data-name="${escapeHtml(name)}" title="Delete">${TRASH_SVG}</button>
+        </span>
+      `;
+      siteMgmtList.appendChild(row);
+    });
+    siteMgmtList.querySelectorAll('.del-btn').forEach(btn => {
+      btn.addEventListener('click', () => deleteSite(btn.getAttribute('data-name')));
+    });
+    siteMgmtList.querySelectorAll('.rename-btn').forEach(btn => {
+      btn.addEventListener('click', () => renameSite(btn.getAttribute('data-name')));
+    });
+  }
+
+  async function addSiteFromMgmt(){
+    const name = newSiteMgmtInput.value.trim();
+    if (!name) return;
+    if (sites.some(s => s.toLowerCase() === name.toLowerCase())){
+      newSiteMgmtInput.value = '';
+      return;
+    }
+    sites.push(name);
+    try {
+      await setDoc(sitesDocRef, { list: sites }, { merge: true });
+    } catch(e){ console.error('Failed to save site', e); }
+    newSiteMgmtInput.value = '';
+    renderSiteMgmtList();
+  }
+
+  async function renameSite(oldName){
+    const input = window.prompt(`Rename "${oldName}" to:`, oldName);
+    if (input === null) return;
+    const newName = input.trim();
+    if (!newName || newName === oldName) return;
+    if (sites.some(s => s.toLowerCase() === newName.toLowerCase() && s !== oldName)){
+      alert(`"${newName}" already exists.`);
+      return;
+    }
+    sites = sites.map(s => s === oldName ? newName : s);
+    try {
+      await setDoc(sitesDocRef, { list: sites }, { merge: true });
+    } catch(e){
+      console.error('Failed to rename site', e);
+      alert('Rename failed — try again');
+      return;
+    }
+    renderSiteMgmtList();
+  }
+
+  async function deleteSite(name){
+    const ok = window.confirm(`Remove "${name}" from the site list? Past entries logged under this site are not affected — it just won't show up as an option anymore.`);
+    if (!ok) return;
+    sites = sites.filter(s => s !== name);
+    try {
+      await setDoc(sitesDocRef, { list: sites }, { merge: true });
+    } catch(e){
+      console.error('Failed to delete site', e);
+      alert('Delete failed — try again');
+      return;
+    }
+    renderSiteMgmtList();
+  }
+
+  addSiteMgmtBtn.addEventListener('click', addSiteFromMgmt);
+  newSiteMgmtInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter'){ e.preventDefault(); addSiteFromMgmt(); }
+  });
+
+  function updateSummaries(){
+    let depositTotal = 0, withdrawTotal = 0, depositCount = 0, withdrawCount = 0;
+    entries.forEach(en => {
+      if (en.type === 'deposit'){ depositTotal += en.amount; depositCount++; }
+      else { withdrawTotal += en.amount; withdrawCount++; }
+    });
+    totalDeposits.textContent = 'Rp ' + fmtAmount(depositTotal);
+    totalWithdrawals.textContent = 'Rp ' + fmtAmount(withdrawTotal);
+    qsDepositTotal.textContent = 'Rp ' + fmtAmount(depositTotal);
+    qsDepositCount.textContent = depositCount + (depositCount === 1 ? ' time' : ' times');
+    qsWithdrawTotal.textContent = 'Rp ' + fmtAmount(withdrawTotal);
+    qsWithdrawCount.textContent = withdrawCount + (withdrawCount === 1 ? ' time' : ' times');
+  }
+
+  function renderHistory(){
+    const sorted = [...entries].sort((a,b) => (b.createdAt||0) - (a.createdAt||0));
+    historyList.innerHTML = '';
+
+    updateSummaries();
+
+    emptyMsg.style.display = sorted.length ? 'none' : 'block';
+    ledgerTable.style.display = sorted.length ? 'table' : 'none';
+
+    sorted.forEach(en => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td class="col-date">${fmtDate(en.date)}</td>
+        <td class="col-site">${escapeHtml(en.site)}</td>
+        <td class="col-type ${en.type}">${en.type === 'deposit' ? 'Deposit' : 'Withdraw'}</td>
+        <td class="col-amt ${en.type}">${en.type==='deposit' ? '−' : '+'}Rp ${fmtAmount(en.amount)}</td>
+        <td class="col-del"><button class="del" data-id="${en.id}" title="Delete">✕</button></td>
+      `;
+      historyList.appendChild(tr);
+    });
+
+    historyList.querySelectorAll('.del').forEach(btn => {
+      btn.addEventListener('click', () => deleteEntry(btn.getAttribute('data-id')));
+    });
+  }
+
+  function escapeHtml(str){
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  async function deleteEntry(id){
+    try {
+      await deleteDoc(doc(db, "entries", id));
+    } catch(e){ console.error('Failed to delete entry', e); }
+  }
+
+  function downloadCsv(){
+    if (!entries.length){
+      alert('Nothing to export yet');
+      return;
+    }
+    const sorted = [...entries].sort((a,b) => a.date.localeCompare(b.date) || (a.createdAt||0)-(b.createdAt||0));
+    const rows = [['Date','Site','Type','Amount']];
+    sorted.forEach(en => {
+      rows.push([en.date, en.site, en.type === 'deposit' ? 'Deposit' : 'Withdrawal', en.amount]);
+    });
+    const csv = rows.map(r => r.map(field => {
+      const s = String(field);
+      return /[",\n]/.test(s) ? '"' + s.replace(/"/g,'""') + '"' : s;
+    }).join(',')).join('\n');
+
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    const stamp = todayStr();
+    a.href = url;
+    a.download = `ledger-export-${stamp}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  exportCsv.addEventListener('click', downloadCsv);
+
+  async function clearAllEntries(){
+    if (!entries.length){
+      alert('Already empty');
+      return;
+    }
+    const ok = window.confirm(`Clear all ${entries.length} entries? This can't be undone — make sure you've moved them to your worksheet first.`);
+    if (!ok) return;
+
+    try {
+      await Promise.all(entries.map(en => deleteDoc(doc(db, "entries", en.id))));
+    } catch(e){
+      console.error('Failed to clear entries', e);
+      alert('Clear failed — try again');
+    }
+  }
+
+  clearAll.addEventListener('click', clearAllEntries);
+
+  entryForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (saveBtn.disabled) return;
+    saveBtn.disabled = true;
+    saveBtn.textContent = 'Saving…';
+
+    const entry = {
+      type: currentType,
+      site: selectedSite,
+      date: dateInput.value,
+      amount: Number(amountInput.value),
+      createdAt: Date.now()
+    };
+
+    try {
+      await addDoc(entriesCol, entry);
+      showToast(`${currentType === 'deposit' ? 'Deposit' : 'Withdrawal'} saved`);
+    } catch(err){
+      console.error('Failed to save entry', err);
+      showToast('Save failed — try again', true);
+    }
+
+    amountInput.value = '';
+    saveBtn.textContent = 'Save entry';
+    dateInput.value = todayStr();
+    validateForm();
+  });
+
+  function showToast(msg, isError){
+    toast.textContent = msg;
+    toast.style.color = isError ? 'var(--withdraw-deep)' : 'var(--deposit-deep)';
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 1800);
+  }
+
+  async function init(){
+    dateInput.value = todayStr();
+    dateInput.max = todayStr();
+    setType('deposit');
+
+    // Live sync: sites list
+    onSnapshot(sitesDocRef, (snap) => {
+      sites = snap.exists() && snap.data().list ? snap.data().list : DEFAULT_SITES;
+      if (siteSuggestions.style.display === 'block') renderSuggestions();
+      if (sitesView.style.display !== 'none') renderSiteMgmtList();
+      validateForm();
+    }, (err) => console.error('sites listener error', err));
+
+    // Live sync: entries, ordered newest first
+    const entriesQuery = query(entriesCol, orderBy('createdAt', 'desc'));
+    onSnapshot(entriesQuery, (snap) => {
+      entries = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      updateSummaries();
+      if (historyView.style.display !== 'none') renderHistory();
+      loadingMsg.style.display = 'none';
+      entryForm.style.display = 'block';
+    }, (err) => {
+      console.error('entries listener error', err);
+      loadingMsg.textContent = 'Could not connect — check your connection.';
+    });
+
+    validateForm();
+  }
+
+  init();
+})();
+</script>
+</body>
+</html>
